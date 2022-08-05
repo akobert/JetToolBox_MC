@@ -1,0 +1,14 @@
+ 1086  condor_submit run.jdl
+ 1088  vim history 
+ 1089  voms-proxy-init --voms cms
+ 
+voms-proxy-init --voms cms -valid 192:00
+
+
+ 1092  voms-proxy-info
+ 1093  cp /tmp/x509up_u926 x509up_u926 
+ 1094  condor_submit run.jdl
+ 1095  cd ../dataRunA/
+ 1097  cp /tmp/x509up_u926 x509up_u926 
+ 1098  condor_submit run.jdl
+ 1099  condor_q akobert
