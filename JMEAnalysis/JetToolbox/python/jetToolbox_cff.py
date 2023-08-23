@@ -54,6 +54,7 @@ def jetToolbox( proc, jetType, jetSequence, outputFile,
 		addEnergyCorrFunc=False, ecfType = "N", ecfBeta = 1.0, ecfN3 = False,
 		addEnergyCorrFuncSubjets=False, ecfSubjetType = "N", ecfSubjetBeta = 1.0, ecfSubjetN3 = False,
 		verbosity=2, 	# 0 = no printouts, 1 = warnings only, 2 = warnings & info, 3 = warnings, info, debug
+#		runParticleNetMD=False,
 		):
 
 
@@ -233,9 +234,12 @@ def jetToolbox( proc, jetType, jetSequence, outputFile,
 			pfCand =  nameNewPFCollection if newPFCollection else 'particleFlow'
 			svLabel = 'inclusiveCandidateSecondaryVertices'
 
-			if runOnMC:
-				proc.load('RecoJets.Configuration.GenJetParticles_cff')
-				_addProcessAndTask( proc, mod["GenJetsNoNu"], ak4GenJets.clone( src = 'genParticlesForJetsNoNu', rParam = jetSize, jetAlgorithm = algorithm ) )
+			if runOnMC: #Changed 3/7/23
+				from RecoJets.Configuration.GenJetParticles_cff import genParticlesForJetsNoNu
+				#proc.load('RecoJets.Configuration.GenJetParticles_cff')
+				_addProcessAndTask( proc, 'genParticlesForJetsNoNuTMP', genParticlesForJetsNoNu.clone() )
+				#_addProcessAndTask( proc, mod["GenJetsNoNu"], ak4GenJets.clone( src = 'genParticlesForJetsNoNu', rParam = jetSize, jetAlgorithm = algorithm ) )
+				_addProcessAndTask( proc, mod["GenJetsNoNu"], ak4GenJets.clone( src = 'genParticlesForJetsNoNuTMP', rParam = jetSize, jetAlgorithm = algorithm ) )
 				jetSeq += getattr(proc, mod["GenJetsNoNu"])
 		#########################################################################
 
@@ -407,6 +411,32 @@ def jetToolbox( proc, jetType, jetSequence, outputFile,
 				genParticles = cms.InputTag(genParticlesLabel),
 				outputModules = ['outputFile']
 				)
+		#Adding ParticleNetMD Tags
+#		if runParticleNetMD:
+#			from RecoBTag.ONNXRuntime.pfParticleNet_cff import pfMassDecorrelatedParticleNetJetTags
+#			flav_names = ["probQCDothers", "probQCDb", "probQCDbb", "probQCDc", "probQCDcc", "probXqq", "probXbb", "probXcc"]
+#			pfMassDecorrelatedParticleNetJetTagsProbs = ['pfMassDecorrelatedParticleNetJetTags:' + n for n in flav_names]
+#			bTagDiscriminators += pfMassDecorrelatedParticleNetJetTagsProbs
+	
+#			print("DEBUG: ParticleNetMD Tagging")
+	
+#			updateJetCollection(
+#				proc,
+#				jetSource=cms.InputTag(mod["PATJetsLabel"]),
+#				rParam=0.8,
+#				jetCorrections=('AK8PFPuppi', cms.vstring(JETCorrLevels), 'None'),
+#	        		btagDiscriminators=bTagDiscriminators,
+#				postfix='AK8'
+#			)
+	
+#			proc.pfParticleNetTagInfosAK8.jet_radius = 0.8                                                                                                                                                
+#	        	proc.pfMassDecorrelatedParticleNetJetTagsAK8ParticleNet = pfMassDecorrelatedParticleNetJetTags.clone(
+#	            		src = 'pfParticleNetTagInfos',
+#	            		preprocess_json = 'PhysicsTools/data/ParticleNet-MD/ak8/preprocess.json',
+#	            		model_path = 'PhysicsTools/data/ParticleNet-MD/ak8/particle-net.onnx',
+#	        	)
+		
+		
 		patJets = 'patJets'
 		patSubJets = ''
 		selPatJets = 'selectedPatJets'
@@ -483,8 +513,10 @@ def jetToolbox( proc, jetType, jetSequence, outputFile,
 		#########################################################################
 
 	mod["PFJetsOrUpdate"] = mod["PFJets"] if not updateCollection else updateCollection
-        for bD in bTagDiscriminators: jetVariables[bD] = Var("bDiscriminator('"+bD+"')", float, doc='bDiscriminator '+bD, precision=10)
-        for bD in subjetBTagDiscriminators: subjetVariables[bD] = Var("bDiscriminator('"+bD+"')", float, doc='subjet bDiscriminator '+bD, precision=10)
+        if (bTagDiscriminators is not None):
+            for bD in bTagDiscriminators: jetVariables[bD] = Var("bDiscriminator('"+bD+"')", float, doc='bDiscriminator '+bD, precision=10)
+        if (subjetBTagDiscriminators is not None):
+            for bD in subjetBTagDiscriminators: subjetVariables[bD] = Var("bDiscriminator('"+bD+"')", float, doc='subjet bDiscriminator '+bD, precision=10)
 	#################################################################################
 
 	#################################################################################
@@ -1310,6 +1342,30 @@ def jetToolbox( proc, jetType, jetSequence, outputFile,
         jetSeq += getattr(proc, mod["PATJetswithUserData"])
 	#################################################################################
 
+	#Adding ParticleNetMD Tags
+#	if runParticleNetMD:
+#		flav_names = ["probQCDothers", "probQCDb", "probQCDbb", "probQCDc", "probQCDcc", "probXqq", "probXbb", "probXcc"]
+#		pfMassDecorrelatedParticleNetJetTagsProbs = ['pfMassDecorrelatedParticleNetJetTags:' + n for n in flav_names]
+#		bTagDiscriminators += pfMassDecorrelatedParticleNetJetTagsProbs
+
+#		print("DEBUG: ParticleNetMD Tagging")
+
+#		updateJetCollection(
+#			proc,
+#			jetSource=cms.InputTag(mod["selPATJets"]),
+#			rParam=0.8,
+#			jetCorrections=('AK8PFPuppi', cms.vstring(JETCorrLevels), 'None'),
+#        		btagDiscriminators=bTagDiscriminators,
+#			postfix='AK8'
+#		)
+
+#		from RecoBTag.ONNXRuntime.pfParticleNet_cff import pfMassDecorrelatedParticleNetJetTags
+#		proc.pfParticleNetTagInfosAK8.jet_radius = 0.8                                                                                                                                                
+#        	proc.pfMassDecorrelatedParticleNetJetTagsAK8ParticleNet = pfMassDecorrelatedParticleNetJetTags.clone(
+#            		src = 'pfParticleNetTagInfos',
+#            		preprocess_json = 'PhysicsTools/data/ParticleNet-MD/ak8/preprocess.json',
+#            		model_path = 'PhysicsTools/data/ParticleNet-MD/ak8/particle-net.onnx',
+#        	)
 
 	#################################################################################
 	###### Saving jet collections
@@ -1392,6 +1448,12 @@ def jetToolbox( proc, jetType, jetSequence, outputFile,
             if runOnMC:
                 setattr( getattr( proc, mod['jetToolboxJetTable'] ).variables,  'partonFlavor', Var('partonFlavour()', int, doc="flavour from parton matching" ) )
                 setattr( getattr( proc, mod['jetToolboxJetTable'] ).variables,  'hadronFlavor', Var('hadronFlavour()', int, doc="flavour from hadron matching" ) )
+
+#	    if runParticleNetMD:
+#		for prob in pfMassDecorrelatedParticleNetJetTagsProbs:
+#		    name = 'ParticleNetMD_' + prob.split(':')[1]
+ #           	    name = name.replace('QCDothers', 'QCD')
+  #          	    setattr(getattr(proc,  mod['jetToolboxJetTable']).variables , name, Var("bDiscriminator('%s')" % prob, float, doc=prob, precision=10))
 
             if addPrunedSubjets or addSoftDropSubjets:
                 setattr( getattr( proc, mod['jetToolboxJetTable'] ).variables, 'subJetIdx1', Var("?nSubjetCollections()>0 && subjets().size()>0?subjets()[0].key():-1", int, doc="index of first subjet") ),
