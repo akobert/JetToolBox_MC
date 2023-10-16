@@ -30,7 +30,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/cms/se/phedex/store/mc/RunIISummer20UL18MiniAODv2/VectorZPrimeGammaToQQGamma_GpT75_M50_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_upgrade2018_realistic_v16_L1v1-v2/50000/3A115AC5-48A6-354C-9BF8-82D380AE3863.root'),
+    fileNames = cms.untracked.vstring('file:/cms/se/phedex/store/mc/RunIISummer20UL18MiniAODv2/VectorZPrimeGammaToQQGamma_GpT75_M50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/106X_upgrade2018_realistic_v16_L1v1-v2/2560000/823F8A7B-A517-4047-9B48-266C0016048F.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -54,7 +54,7 @@ process.NANOAODSIMoutput = cms.OutputModule("NanoAODOutputModule",
         dataTier = cms.untracked.string('NANOAODSIM'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:/cms/xaastorage/NanoAOD/2018/JUNE19/UL/signal/M50/jetToolbox_nano_mc_2018_M50_21.root'),
+    fileName = cms.untracked.string('file:/cms/akobert/UL/signalMC/M50/jetToolbox_nano_mc_2018_M50_21.root'),
     outputCommands = process.NANOAODSIMEventContent.outputCommands
 )
 

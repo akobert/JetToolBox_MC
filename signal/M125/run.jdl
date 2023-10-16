@@ -9,4 +9,4 @@ Error = /home/akobert/CMSSW_10_6_29/src/TreeFiles/run_$(cluster)_$(process).stde
 Log = /home/akobert/CMSSW_10_6_29/src/TreeFiles/run_$(cluster)_$(process).condor
 Arguments = $(cluster) $(process)
 max_materialize = 150
-Queue 46
+Queue 40

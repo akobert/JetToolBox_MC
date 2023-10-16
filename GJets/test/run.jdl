@@ -4,7 +4,6 @@ Requirements = (Arch == "X86_64")
 +AccountingGroup = "group_rutgers.akobert"
 Executable = run.sh
 should_transfer_files = NO
-x509userproxy = /home/akobert/CMSSW_10_6_29/src/GJets/test/x509up_u926
 Output = /home/akobert/CMSSW_10_6_29/src/TreeFiles/run_$(cluster)_$(process).stdout
 Error = /home/akobert/CMSSW_10_6_29/src/TreeFiles/run_$(cluster)_$(process).stderr
 Log = /home/akobert/CMSSW_10_6_29/src/TreeFiles/run_$(cluster)_$(process).condor
